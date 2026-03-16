@@ -798,6 +798,7 @@
     #hero{
       padding:0 20px;
       text-align:left;
+      min-height: 120vh
     }
 
     .hero-name{
