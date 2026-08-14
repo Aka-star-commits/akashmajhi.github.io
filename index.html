@@ -267,70 +267,121 @@
     <span>Designed in the dark.</span>
   </footer>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
+    onerror="console.error('Failed to load Cloudflare email-decode script; obfuscated emails will not be decoded.')"></script>
   <script>
+    (function () {
+      'use strict';
 
-    //LOADER
-    window.addEventListener("load", () => {
-      const loader = document.getElementById("loader");
+      // Any uncaught error would otherwise leave .fade-up content permanently hidden.
+      window.addEventListener('error', event => {
+        console.error('Uncaught error on page:', event.error || event.message);
+        revealAll();
+      });
 
-      setTimeout(() => {
-        loader.style.opacity = "0";
-        loader.style.transition = "opacity 0.6s ease";
+      function required(id) {
+        const el = document.getElementById(id);
+        if (!el) {
+          throw new Error('Missing required element #' + id);
+        }
+        return el;
+      }
 
-        setTimeout(() => {
-          loader.style.display = "none";
-        }, 600);
+      function revealAll() {
+        document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+      }
 
-      }, 5500);
-    });
-    // CUSTOM CURSOR
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx - 3 + 'px';
-      cursor.style.top = my - 3 + 'px';
-    });
-    (function animRing() {
-      rx += (mx - rx - 14) * 0.12;
-      ry += (my - ry - 14) * 0.12;
-      ring.style.left = rx + 'px';
-      ring.style.top = ry + 'px';
-      requestAnimationFrame(animRing);
-    })();
+      // Each feature is initialised independently: a failure in one must not
+      // stop the others, but it must still be reported.
+      function init(name, fn) {
+        try {
+          fn();
+        } catch (err) {
+          console.error('[' + name + '] initialisation failed:', err);
+        }
+      }
 
-    // NAV SCROLL
-    window.addEventListener('scroll', () => {
-      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-    });
-
-    // INTERSECTION OBSERVER (fade-up)
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
+      // LOADER
+      init('loader', () => {
+        const loader = required('loader');
+        const hide = () => {
+          loader.style.opacity = '0';
+          loader.style.transition = 'opacity 0.6s ease';
+          setTimeout(() => { loader.style.display = 'none'; }, 600);
+        };
+        // 'load' may already have fired by the time this runs.
+        if (document.readyState === 'complete') {
+          setTimeout(hide, 5500);
+        } else {
+          window.addEventListener('load', () => setTimeout(hide, 5500));
         }
       });
-    }, { threshold: 0.1 });
 
-    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-  
-    // PROJECT-BUTTOONS HOVER EFFECT
-    const buttons = document.querySelectorAll('.btn-primary');
+      // CUSTOM CURSOR
+      init('cursor', () => {
+        const cursor = required('cursor');
+        const ring = required('cursorRing');
+        let mx = 0, my = 0, rx = 0, ry = 0;
 
-    buttons.forEach(btn => {
-      btn.addEventListener('mousemove', e => {
-        const rect = btn.getBoundingClientRect();
+        document.addEventListener('mousemove', e => {
+          mx = e.clientX; my = e.clientY;
+          cursor.style.left = mx - 3 + 'px';
+          cursor.style.top = my - 3 + 'px';
+        });
 
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        btn.style.setProperty('--x', x + 'px');
-        btn.style.setProperty('--y', y + 'px');
+        (function animRing() {
+          try {
+            rx += (mx - rx - 14) * 0.12;
+            ry += (my - ry - 14) * 0.12;
+            ring.style.left = rx + 'px';
+            ring.style.top = ry + 'px';
+          } catch (err) {
+            // Report once and stop instead of throwing on every frame.
+            console.error('[cursor] ring animation stopped:', err);
+            return;
+          }
+          requestAnimationFrame(animRing);
+        })();
       });
-    });
+
+      // NAV SCROLL
+      init('nav-scroll', () => {
+        const navbar = required('navbar');
+        window.addEventListener('scroll', () => {
+          navbar.classList.toggle('scrolled', window.scrollY > 60);
+        });
+      });
+
+      // INTERSECTION OBSERVER (fade-up)
+      init('fade-up', () => {
+        const targets = document.querySelectorAll('.fade-up');
+        if (typeof IntersectionObserver !== 'function') {
+          console.warn('[fade-up] IntersectionObserver unsupported; revealing content immediately.');
+          revealAll();
+          return;
+        }
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        targets.forEach(el => obs.observe(el));
+      });
+
+      // PROJECT-BUTTONS HOVER EFFECT
+      init('button-hover', () => {
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+          btn.addEventListener('mousemove', e => {
+            const rect = btn.getBoundingClientRect();
+            btn.style.setProperty('--x', (e.clientX - rect.left) + 'px');
+            btn.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+          });
+        });
+      });
+    })();
   </script>
 </body>
 
