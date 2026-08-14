@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Portfolio — Web Developer & Python Engineer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
@@ -254,7 +257,7 @@
     <div class="contact-big fade-up">
       GET IN<br><span>TOUCH.</span>
     </div>
-    <a href="https://github.com/Aka-star-commits" target="_blank" class="btn-primary"
+    <a href="https://github.com/Aka-star-commits" target="_blank" rel="noopener noreferrer" class="btn-primary"
       style="font-size:13px;padding:16px 36px;">
       github.com/Aka-star-commits →
     </a>
@@ -267,7 +270,6 @@
     <span>Designed in the dark.</span>
   </footer>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script>
 
     //LOADER
