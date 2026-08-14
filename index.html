@@ -52,7 +52,7 @@
           closing fast.
         </p>
         <div class="hero-cta">
-          <div style="display:flex;gap:12px;">
+          <div class="hero-actions">
             <a href="#projects" class="btn-primary">View Work →</a>
             <a href="#contact" class="btn-ghost">Let's Talk</a>
           </div>
@@ -105,7 +105,7 @@
         <p class="about-text">
           I believe clean code is a design principle, not just a practice.
         </p>
-        <a href="#contact" class="btn-ghost" style="margin-top:8px;">Download Resume →</a>
+        <a href="#contact" class="btn-ghost about-cta">Download Resume →</a>
       </div>
     </div>
   </section>
@@ -154,8 +154,8 @@
     </div>
 
     <!-- PYTHON TRACK -->
-    <div style="margin-top: 48px;">
-      <p class="section-label" style="margin-bottom:24px;"><span>→</span> Python Learning Track</p>
+    <div class="track-block">
+      <p class="section-label subsection"><span>→</span> Python Learning Track</p>
       <div class="track-grid fade-up">
         <div class="track-step done">
           <div class="step-num">01</div>
@@ -232,7 +232,7 @@
         <div class="proj-stack">
           <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span><span class="tag">Firebase</span><span class="tag">Socket.IO</span>
         </div>
-        <div class="proj-arrow" style="color:var(--accent);">ONGOING</div>
+        <div class="proj-arrow accent-text">ONGOING</div>
       </a>
       <a href="#" class="project-row fade-up">
         <div class="proj-num">05</div>
@@ -243,7 +243,7 @@
         <div class="proj-stack">
           <span class="tag">?</span>
         </div>
-        <div class="proj-arrow" style="color:var(--accent);">+</div>
+        <div class="proj-arrow accent-text">+</div>
       </a>
     </div>
   </section>
@@ -254,8 +254,7 @@
     <div class="contact-big fade-up">
       GET IN<br><span>TOUCH.</span>
     </div>
-    <a href="https://github.com/Aka-star-commits" target="_blank" class="btn-primary"
-      style="font-size:13px;padding:16px 36px;">
+    <a href="https://github.com/Aka-star-commits" target="_blank" class="btn-primary btn-lg">
       github.com/Aka-star-commits →
     </a>
   </section>
@@ -263,47 +262,58 @@
   <!-- FOOTER -->
   <footer>
     <span>© 2026 Akash Majhi</span>
-    <span>Web Dev · Python · <span style="color:var(--accent);">Django Soon™</span></span>
+    <span>Web Dev · Python · <span class="accent-text">Django Soon™</span></span>
     <span>Designed in the dark.</span>
   </footer>
 
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script>
 
+    // SHARED UTILITIES
+    const byId = id => document.getElementById(id);
+    const all = selector => Array.from(document.querySelectorAll(selector));
+    const setPos = (el, x, y) => {
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+    };
+    const setPoint = (el, prefix, x, y) => {
+      el.style.setProperty(prefix + 'x', x + 'px');
+      el.style.setProperty(prefix + 'y', y + 'px');
+    };
+
     //LOADER
-    window.addEventListener("load", () => {
-      const loader = document.getElementById("loader");
+    window.addEventListener('load', () => {
+      const loader = byId('loader');
 
       setTimeout(() => {
-        loader.style.opacity = "0";
-        loader.style.transition = "opacity 0.6s ease";
+        loader.style.opacity = '0';
+        loader.style.transition = 'opacity 0.6s ease';
 
         setTimeout(() => {
-          loader.style.display = "none";
+          loader.style.display = 'none';
         }, 600);
 
       }, 5500);
     });
+
     // CUSTOM CURSOR
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursorRing');
+    const cursor = byId('cursor');
+    const ring = byId('cursorRing');
     let mx = 0, my = 0, rx = 0, ry = 0;
     document.addEventListener('mousemove', e => {
       mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx - 3 + 'px';
-      cursor.style.top = my - 3 + 'px';
+      setPos(cursor, mx - 3, my - 3);
     });
     (function animRing() {
       rx += (mx - rx - 14) * 0.12;
       ry += (my - ry - 14) * 0.12;
-      ring.style.left = rx + 'px';
-      ring.style.top = ry + 'px';
+      setPos(ring, rx, ry);
       requestAnimationFrame(animRing);
     })();
 
     // NAV SCROLL
     window.addEventListener('scroll', () => {
-      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+      byId('navbar').classList.toggle('scrolled', window.scrollY > 60);
     });
 
     // INTERSECTION OBSERVER (fade-up)
@@ -315,20 +325,13 @@
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-  
-    // PROJECT-BUTTOONS HOVER EFFECT
-    const buttons = document.querySelectorAll('.btn-primary');
+    all('.fade-up').forEach(el => obs.observe(el));
 
-    buttons.forEach(btn => {
+    // PROJECT-BUTTOONS HOVER EFFECT
+    all('.btn-primary').forEach(btn => {
       btn.addEventListener('mousemove', e => {
         const rect = btn.getBoundingClientRect();
-
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        btn.style.setProperty('--x', x + 'px');
-        btn.style.setProperty('--y', y + 'px');
+        setPoint(btn, '--', e.clientX - rect.left, e.clientY - rect.top);
       });
     });
   </script>
